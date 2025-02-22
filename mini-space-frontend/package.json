@@ -1,0 +1,28 @@
+{
+    "name": "mini-gather",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "test": "echo \"No test specified\" && exit 0",
+        "build": "vite build",
+        "preview": "vite preview",
+        "prepare": "husky install"
+    },
+    "devDependencies": {
+        "husky": "^8.0.0",
+        "lint-staged": "^15.4.3",
+        "prettier": "3.5.1",
+        "vite": "^6.1.0"
+    },
+    "dependencies": {
+        "pixi-viewport": "^6.0.3",
+        "pixi.js": "^8.8.0",
+        "socket.io": "^4.8.1",
+        "socket.io-client": "^4.8.1"
+    },
+    "lint-staged": {
+        "**/*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+    }
+}
