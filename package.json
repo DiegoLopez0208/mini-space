@@ -4,10 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:frontend": "cd mini-space-frontend && npm start",
+    "start:backend": "cd mini-space-backend  && npm start",
+    "start": "concurrently -n \"Frontend,Backend\" -c \"blue,green\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev:frontend": "cd mini-space-frontend  && npm run dev",
+    "dev:backend": "cd mini-space-backend && npm run dev",
+    "dev": "concurrently -n \"Backend,Frontend\" -c \"cyan,red\" \"npm run dev:backend\" \"npm run dev:frontend\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "husky": "^9.1.7"
+  }
 }

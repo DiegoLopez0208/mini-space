@@ -1,13 +1,12 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server); 
 
 let players = {};
-
 
 io.on('connection', (socket) => {
     console.log(`Jugador conectado: ${socket.id}`);
@@ -19,9 +18,12 @@ io.on('connection', (socket) => {
     players[socket.id] = { x: 2000, y: 2000 };
     io.emit('newPlayer', { id: socket.id, x: 2000, y: 2000 });
 
+
     socket.on('move', (data) => {
-        players[socket.id] = { x: data.x, y: data.y };
-        io.emit('playerMoved', { id: socket.id, x: data.x, y: data.y });
+        if (players[socket.id]) { 
+            players[socket.id] = { x: data.x, y: data.y };
+            io.emit('playerMoved', { id: socket.id, x: data.x, y: data.y });
+        }
     });
 
 

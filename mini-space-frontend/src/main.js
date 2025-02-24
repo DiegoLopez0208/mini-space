@@ -5,11 +5,30 @@ import { PlayerName } from "./player";
 import { io } from "socket.io-client";
 
 (async () => {
-    const socket = io("http://localhost:3000");
+    const socket = io("http://localhost:3000", { transports: ["websocket"] });
+
+    
 
     const players = {};
     const app = new Application();
     await app.init({ resizeTo: window });
+
+
+    function createPlayer(x, y, id) {
+        const player = Object.assign(Sprite.from("assets/man.png"), {
+            width: 400,
+            height: 400,
+        });
+        player.anchor.set(0.5);
+        player.position.set(x, y); 
+        
+        const name = new PlayerName(id, player);
+        player.addChild(name);
+
+        viewport.addChild(player);
+
+        return player;
+    }
 
     socket.on("currentPlayers", (serverPlayers) => {
         Object.keys(serverPlayers).forEach((id) => {
@@ -17,26 +36,29 @@ import { io } from "socket.io-client";
                 players[id] = createPlayer(
                     serverPlayers[id].x,
                     serverPlayers[id].y,
-                    id,
+                    id
                 );
             }
         });
     });
 
     socket.on("newPlayer", (data) => {
-        players[data.id] = createPlayer(data.x, data.y, data.id);
+        if (!players[data.id]) {
+            players[data.id] = createPlayer(data.x, data.y, data.id);
+        }
     });
 
     socket.on("playerMoved", (data) => {
         if (players[data.id]) {
-            players[data.id].x = data.x;
-            players[data.id].y = data.y;
+            players[data.id].position.set(data.x, data.y);
         }
     });
 
     socket.on("playerDisconnected", (id) => {
         if (players[id]) {
-            players[id].destroy();
+            if (typeof players[id].destroy === "function") {
+                players[id].destroy();
+            }
             delete players[id];
         }
     });
@@ -91,7 +113,6 @@ import { io } from "socket.io-client";
     viewport.addChild(playerName);
 
     viewport.fit();
-
     viewport.follow(avatar, { speed: 5 });
 
     const keyController = new KeyController(avatar);
@@ -105,20 +126,4 @@ import { io } from "socket.io-client";
         socket.emit("move", { x: avatar.x, y: avatar.y });
     });
 
-    function createPlayer(x, y, id) {
-        const player = Object.assign(Sprite.from("assets/man.png"), {
-            width: 100,
-            height: 100,
-        });
-        player.anchor.set(0.5);
-        player.x = x;
-        player.y = y;
-
-        const name = new PlayerName(id, player);
-        player.addChild(name);
-
-        viewport.addChild(player);
-
-        return player;
-    }
 })();
